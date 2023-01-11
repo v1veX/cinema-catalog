@@ -1,12 +1,12 @@
-#include "stdlib.h"
-#include "stdio.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 typedef struct Film{
     char* name;
-    int year;
+    char* year;
     char* country;
     char* genre;
-    float rate;
+    char* rate;
     struct Film* prev;
     struct Film* next;
 }Film;
@@ -16,31 +16,76 @@ typedef struct Film{
 //     struct film_element* prev;
 //     struct film_element* next;
 // }film_el;
-Film Create_el(char* name, int year, char* country, char*genre, float rate){
+
+Film* Create_el(char* name, char* year, char* country, char*genre, char* rate){
     Film* new = (Film*)malloc(sizeof(Film));
     new -> name = name;
     new -> year = year;
     new -> country = country;
     new -> genre = genre;
     new -> rate = rate;
+    new -> next = NULL;
     return new;
 };
 
- void Create_filmlist(){
-     FILE* file = fopen("films.txt", "r");
-     Film* first = NULL;
-     char* name, *country, *genre;
-     int year;
-     float rate;
+void Add_film(Film* head, char* name, char* year, char* country, char*genre, char* rate){
+    Film* new = (Film*)malloc(sizeof(Film));
+    new -> name = name;
+    new -> year = year;
+    new -> country = country;
+    new -> genre = genre;
+    new -> rate = rate;
+    new -> next = NULL;
+    Film *p = head;
+    while ( p -> next != NULL){
+        p = p -> next;
+    }
+    p -> next = new;
+}
 
-     while(fscanf(films, "%s", &name) != EOF){
-         fscanf(films, "%d", &year);
-         fscanf(films, "%s", &country);
-         fscanf(films, "%s", &genre);
-         fscanf(films, "%g", &rate);
-         Create_el(name, year, country, genre, rate);
-     }
- }
+Film* Scan_films(){
+    char* Name;
+    char* Year;
+    char* Country;
+    char* Genre;
+    char* Rate;
+    FILE* file;
+    file = fopen("films.txt", "r");
+    Film* head = NULL;
+
+    fscanf(file, "%s", &Name);
+    fscanf(file, "%s", &Year);
+    fscanf(file, "%s", &Country);
+    fscanf(file, "%s", &Genre);
+    fscanf(file, "%s", &Rate);
+    Film* first = Create_el(Name, Year, Country, Genre, Rate);
+    head = first;
+
+
+    while(fscanf(file, "%s", &Name)!= EOF){
+        fscanf(file, "%s", &Year);
+        fscanf(file, "%s", &Country);
+        fscanf(file, "%s", &Genre);
+        fscanf(file, "%s", &Rate);
+        Add_film(head, Name, Year, Country, Genre, Rate);
+    }
+    fclose(file);
+    return head;
+}
+
+void Print(Film *head){
+    Film *p = head;
+    while(p != NULL){
+        printf("%s ", p->name);
+        p = p -> next;
+    }
+}
+
+
 int main(){
-
+    FILE* file; 
+    file = fopen("films.txt", "r");
+    char a;
+    fscanf(file, "%c", &a);
+    printf("%c", a);
 }
