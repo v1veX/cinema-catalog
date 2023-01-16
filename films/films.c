@@ -1,91 +1,116 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <locale.h>
 
-typedef struct Film{
+
+#define BUFF_SIZE 1024
+
+typedef struct Film {
     char* name;
-    char* year;
+    int* year;
     char* country;
     char* genre;
-    char* rate;
+    float* rate;
     struct Film* prev;
     struct Film* next;
 }Film;
 
-// typedef struct film_element{
-//     Film film;
-//     struct film_element* prev;
-//     struct film_element* next;
-// }film_el;
+typedef struct FilmList {
+    Film* head;
+}FilmList;
 
-Film* Create_el(char* name, char* year, char* country, char*genre, char* rate){
+Film* CreateFilm(char* name, int* year, char* country, char* genre, float* rate) {
     Film* new = (Film*)malloc(sizeof(Film));
-    new -> name = name;
-    new -> year = year;
-    new -> country = country;
-    new -> genre = genre;
-    new -> rate = rate;
-    new -> next = NULL;
+    new->name = name;
+    new->year = year;
+    new->country = country;
+    new->genre = genre;
+    new->rate = rate;
+    new->prev = NULL;
+    new->next = NULL;
     return new;
 };
 
-void Add_film(Film* head, char* name, char* year, char* country, char*genre, char* rate){
-    Film* new = (Film*)malloc(sizeof(Film));
-    new -> name = name;
-    new -> year = year;
-    new -> country = country;
-    new -> genre = genre;
-    new -> rate = rate;
-    new -> next = NULL;
-    Film *p = head;
-    while ( p -> next != NULL){
-        p = p -> next;
+void AddExistingFilm(FilmList* list, Film* film) {
+    if (list->head == NULL) {
+        list->head = film;
+        film->next = NULL;
+        film->prev = NULL;
     }
-    p -> next = new;
+    else if (list->head->next == NULL) {
+        list->head->next = film;
+        film->next = list->head;
+        list->head->prev = film;
+        film->prev = list->head;
+    }
+    else {
+        Film* tail = list->head->prev;
+        tail->next = film;
+        film->next = list->head;
+        film->prev = tail;
+        list->head->prev = film;
+    }
 }
 
-Film* Scan_films(){
-    char* Name;
-    char* Year;
-    char* Country;
-    char* Genre;
-    char* Rate;
-    FILE* file;
-    file = fopen("films.txt", "r");
-    Film* head = NULL;
+void PrintFilm(Film* film) {
+    printf("%s", film->name);
+    printf("\t%s", film->year);
+    printf("\t%s", film->country);
+    printf("\t%s", film->genre);
+    printf("\t%s", film->rate);
+}
 
-    fscanf(file, "%s", &Name);
-    fscanf(file, "%s", &Year);
-    fscanf(file, "%s", &Country);
-    fscanf(file, "%s", &Genre);
-    fscanf(file, "%s", &Rate);
-    Film* first = Create_el(Name, Year, Country, Genre, Rate);
-    head = first;
+void Print(FilmList* list) {
+    Film* p = list->head;
+    PrintFilm(p);
+    p = p->next;
 
+    while (p != list->head) {
+        PrintFilm(p);
+        p = p->next;
+    } 
+}
 
-    while(fscanf(file, "%s", &Name)!= EOF){
-        fscanf(file, "%s", &Year);
-        fscanf(file, "%s", &Country);
-        fscanf(file, "%s", &Genre);
-        fscanf(file, "%s", &Rate);
-        Add_film(head, Name, Year, Country, Genre, Rate);
+Film* CreateFilmFromFile(FILE *file) {
+    
+    char* filmData[5];
+    for (int i = 0; i < 5; i++) {
+        filmData[i] = malloc(sizeof(char) * BUFF_SIZE);
     }
+
+    for (int i = 0; i < 5; i++) {
+        fgets(filmData[i], BUFF_SIZE, file);
+    }
+
+    return CreateFilm(filmData[0], filmData[1], filmData[2], filmData[3], filmData[4]);
+}
+
+void AddFilmsFromFile(FILE* file, FilmList* list) {
+
+    while (!feof(file)) {  
+        Film* film = CreateFilmFromFile(file);
+        AddExistingFilm(list, film);
+    }
+
     fclose(file);
-    return head;
 }
 
-void Print(Film *head){
-    Film *p = head;
-    while(p != NULL){
-        printf("%s ", p->name);
-        p = p -> next;
-    }
+Film* CreateFilmList() {
+    setlocale(LC_ALL, "Russian");
+    FilmList* temp = (FilmList*)malloc(sizeof(FilmList));
+    temp->head = NULL;
+    FILE* file = fopen("films.txt", "r");
+
+    AddFilmsFromFile(file, temp);
+
+    fclose(file);
+    return temp->head;
 }
 
+// Тебе нужно сделать вывод фильмов в рамках и возможность их переключать. Тебе для этого понадобится функция CreateFilmList().
+// Она возвращает уже готовый двусвязный список и он уже связан в кольцо.
 
-int main(){
-    FILE* file; 
-    file = fopen("films.txt", "r");
-    char a;
-    fscanf(file, "%c", &a);
-    printf("%c", a);
+int main() {
+    
+    return 0;
 }
