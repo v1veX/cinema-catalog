@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <locale.h>
-
+#include <windows.h>
+#include <string.h>
 
 #define BUFF_SIZE 1024
 
@@ -60,17 +61,6 @@ void PrintFilm(Film* film) {
     printf("\t%s", film->rate);
 }
 
-void Print(FilmList* list) {
-    Film* p = list->head;
-    PrintFilm(p);
-    p = p->next;
-
-    while (p != list->head) {
-        PrintFilm(p);
-        p = p->next;
-    } 
-}
-
 Film* CreateFilmFromFile(FILE *file) {
     
     char* filmData[5];
@@ -80,6 +70,7 @@ Film* CreateFilmFromFile(FILE *file) {
 
     for (int i = 0; i < 5; i++) {
         fgets(filmData[i], BUFF_SIZE, file);
+        filmData[i][strcspn(filmData[i], "\n")] = 0;
     }
 
     return CreateFilm(filmData[0], filmData[1], filmData[2], filmData[3], filmData[4]);
@@ -105,12 +96,4 @@ Film* CreateFilmList() {
 
     fclose(file);
     return temp->head;
-}
-
-// Тебе нужно сделать вывод фильмов в рамках и возможность их переключать. Тебе для этого понадобится функция CreateFilmList().
-// Она возвращает уже готовый двусвязный список и он уже связан в кольцо.
-
-int main() {
-    
-    return 0;
 }

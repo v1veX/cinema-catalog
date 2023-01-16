@@ -159,3 +159,8 @@ struct user* welcome() {
         } else continue;
     }
 }
+
+int main() {
+    struct user* usr = welcome();
+    printf("%s %s %s %d %d", usr->login, usr->pass, usr->card, usr->favorites, usr->is_admin);
+}
