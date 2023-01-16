@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
-#include "users.h"
 
 struct user {
     char* login;
@@ -158,9 +157,4 @@ struct user* welcome() {
             exit(0);
         } else continue;
     }
-}
-
-int main() {
-    struct user* usr = welcome();
-    printf("%s %s %s %d %d", usr->login, usr->pass, usr->card, usr->favorites, usr->is_admin);
 }
