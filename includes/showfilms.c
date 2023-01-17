@@ -3,6 +3,10 @@
 #include <locale.h>
 #include <windows.h>
 #include <string.h>
+#include "films.h"
+#include "showfilms.h"
+#include "adminMode.h"
+#include "users.h"
 
 void Print_up() {
     for (int i = 1; i < 66; i++) {
@@ -67,19 +71,20 @@ void Print(char* str) {
     for (int i = 1; i < (80 - k) / 2; i++) {
         printf(" ");
     }
-
+    setlocale(LC_ALL, "Russian");
     for (int i = 0; str[i] != '\0'; i++) {
         printf("%c", str[i]);
     }
+    setlocale(LC_ALL, "C");
     if (k % 2 == 0) {
-    for (int i = 0; i < (80 - k) / 2 - 1; i++) {
-        printf(" ");
-    }
+        for (int i = 0; i < (80 - k) / 2 - 1; i++) {
+            printf(" ");
+        }
     }
     else {
-    for (int i = 0; i < (80 - k) / 2; i++) {
-        printf(" ");
-    }
+        for (int i = 0; i < (80 - k) / 2; i++) {
+            printf(" ");
+        }
     }
     printf("%c", 222);
 }
@@ -88,24 +93,26 @@ void Print_left(char* str) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
     printf("%c", 179);
     int k = 0;
-        for (int i = 0; str[i] != '\0'; i++) {
-    k += 1;
+    for (int i = 0; str[i] != '\0'; i++) {
+        k += 1;
     }
-    for (int i = 1; i < (64-k)/2; i++) {
+    for (int i = 1; i < (64 - k) / 2; i++) {
         printf(" ");
     }
+    setlocale(LC_ALL, "Russian");
     for (int i = 0; str[i] != '\0'; i++) {
         if (i == 0) {
             printf("%c", str[i]);
         }
-        else if (i == k ) {
+        else if (i == k) {
             printf("%c", str[i]);
         }
         else {
             printf("%c", str[i]);
         }
-        }
-        if (k % 2 == 0) {
+    }
+    setlocale(LC_ALL, "C");
+    if (k % 2 == 0) {
         for (int i = 0; i < (64 - k) / 2 - 1; i++) {
             printf(" ");
         }
@@ -115,17 +122,17 @@ void Print_left(char* str) {
             printf(" ");
         }
     }
-    printf(" ");
+    printf("  ");
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
 }
 void Print_right(char* str) {
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
-    printf(" ");
+    printf("  ");
     int k = 0;
-        for (int i = 0; str[i] != '\0'; i++) {
-    k += 1;
+    for (int i = 0; str[i] != '\0'; i++) {
+        k += 1;
     }
     if (k % 2 == 0) {
         for (int i = 0; i < (64 - k) / 2 - 1; i++) {
@@ -137,17 +144,19 @@ void Print_right(char* str) {
             printf(" ");
         }
     }
+    setlocale(LC_ALL, "Russian");
     for (int i = 0; str[i] != '\0'; i++) {
         if (i == 0) {
             printf("%c", str[i]);
         }
-        else if (i == k ) {
+        else if (i == k) {
             printf("%c", str[i]);
         }
         else {
             printf("%c", str[i]);
         }
     }
+    setlocale(LC_ALL, "C");
     for (int i = 1; i < (64 - k) / 2; i++) {
         printf(" ");
     }
@@ -157,10 +166,10 @@ void Print_right(char* str) {
 
 }
 
-void ShowFilms() {
+void ShowFilms(struct user* user) {
     Film* p = CreateFilmList();
     char gap[] = " ";
-    
+
     while (1) {
         char* name_l = p->prev->name;
         char* year_l = p->prev->year;
@@ -179,8 +188,8 @@ void ShowFilms() {
         char* country_r = p->next->country;
         char* genre_r = p->next->genre;
         char* rate_r = p->next->rate;
-        
-        system("cls");        
+
+        system("cls");
         system("mode con cols=320 lines=20");
         Print_up();
         Print_up_left();
@@ -207,10 +216,16 @@ void ShowFilms() {
         Print_down();
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         printf("\nA - Switch to left\nD - Switch to right\nESC - Exit");
+        if (user->is_admin == 1) printf("\nQ - Add film");
         char a = _getch();
         if (a == 'a') p = p->prev;
         else if (a == 'd') p = p->next;
+        else if (a == 'q' && user->is_admin == 1) {
+            adminMode();
+            p = CreateFilmList();
+        }
         else if (a == 27) exit(0);
         else continue;
     }
 }
+

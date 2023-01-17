@@ -3,22 +3,8 @@
 #include <locale.h>
 #include <windows.h>
 #include <string.h>
+#include "films.h"
 
-#define BUFF_SIZE 1024
-
-typedef struct Film {
-    char* name;
-    int* year;
-    char* country;
-    char* genre;
-    float* rate;
-    struct Film* prev;
-    struct Film* next;
-}Film;
-
-typedef struct FilmList {
-    Film* head;
-}FilmList;
 
 Film* CreateFilm(char* name, int* year, char* country, char* genre, float* rate) {
     Film* new = (Film*)malloc(sizeof(Film));
@@ -61,8 +47,8 @@ void PrintFilm(Film* film) {
     printf("\t%s", film->rate);
 }
 
-Film* CreateFilmFromFile(FILE *file) {
-    
+Film* CreateFilmFromFile(FILE* file) {
+
     char* filmData[5];
     for (int i = 0; i < 5; i++) {
         filmData[i] = malloc(sizeof(char) * BUFF_SIZE);
@@ -78,7 +64,7 @@ Film* CreateFilmFromFile(FILE *file) {
 
 void AddFilmsFromFile(FILE* file, FilmList* list) {
 
-    while (!feof(file)) {  
+    while (!feof(file)) {
         Film* film = CreateFilmFromFile(file);
         AddExistingFilm(list, film);
     }
@@ -87,7 +73,7 @@ void AddFilmsFromFile(FILE* file, FilmList* list) {
 }
 
 Film* CreateFilmList() {
-    setlocale(LC_ALL, "Russian");
+
     FilmList* temp = (FilmList*)malloc(sizeof(FilmList));
     temp->head = NULL;
     FILE* file = fopen("films.txt", "r");

@@ -2,14 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
-
-struct user {
-    char* login;
-    char* pass;
-    char* card;
-    int favorites;
-    int is_admin;
-};
+#include "users.h"
 
 struct user* login() {
     char login[21], pass[21];
@@ -17,7 +10,7 @@ struct user* login() {
     int favf, is_adminf, is_successful = 0;
     struct user* user_info = (struct user*)malloc(sizeof(struct user));
     while (1) {
-        FILE * users = fopen("users.txt", "r");
+        FILE* users = fopen("users.txt", "r");
         system("cls");
         printf("Login: ");
         scanf("%s", &login);
@@ -31,7 +24,8 @@ struct user* login() {
                     fclose(users);
                     break;
                 }
-            } else {
+            }
+            else {
                 system("cls");
                 printf("Wrong login or password! Press any key to try again.");
                 char cont = _getch();
@@ -54,14 +48,15 @@ struct user* login() {
 int is_login_free(char* login) {
     char loginf[21], passf[21], cardf[17];
     int favf, is_adminf;
-    FILE * users = fopen("users.txt", "r");
+    FILE* users = fopen("users.txt", "r");
     while (1) {
         if (fscanf(users, "%s", &loginf) != EOF) {
             if (strcmp(login, loginf) == 0) {
                 fclose(users);
                 return 0;
             }
-        } else return 1;
+        }
+        else return 1;
     }
 }
 
@@ -133,7 +128,7 @@ void reg() {
         else if (card_length != 16) print_reg_error("Card number must contain 16 numbers! Press any key to try again.");
         else break;
     }
-    FILE * users = fopen("users.txt", "a");
+    FILE* users = fopen("users.txt", "a");
     fprintf(users, "\n%s %s %s %d %d", login, pass, card, fav, is_admin);
     fclose(users);
     printf("\nYou signed up successfully. Press any key to sign in.");
@@ -141,20 +136,23 @@ void reg() {
 }
 
 struct user* welcome() {
-    printf("Welcome to online cinema <<CINEMA_NAME>>!\n\n1 - Sign in\n2 - Sign up\nESC - Exit");
+    printf("Welcome to online cinema RODINA!\n\n1 - Sign in\n2 - Sign up\nESC - Exit");
     while (1) {
         char welcome = _getch();
         if (welcome == '1') {
             struct user* user = login();
             return user;
             break;
-        } else if (welcome == '2') {
+        }
+        else if (welcome == '2') {
             reg();
             struct user* user = login();
             return user;
             break;
-        } else if (welcome == 27) {
+        }
+        else if (welcome == 27) {
             exit(0);
-        } else continue;
+        }
+        else continue;
     }
 }
